@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello MovieController!{% endblock %}
+{% block title %}{{ movie is empty ? 'Not found' : movie.title }}{% endblock %}
 
 {% block body %}
 <style>
@@ -9,12 +9,18 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {% if movie is not empty %}
+        <h1>{{ movie.title }}</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/benjamin/Dev/sl/formations/training-data-feb/src/Controller/MovieController.php</code></li>
-        <li>Your template at <code>/home/benjamin/Dev/sl/formations/training-data-feb/templates/movie/index.html.twig</code></li>
-    </ul>
+        <img class="float-end" src="{{ movie.cover }}" alt="{{ movie.title }} cover">
+        <ul>
+            <li>Id : {{ movie.id }}</li>
+            <li>Plot : {{ movie.plot }}</li>
+            <li>Released at : {{ movie.releasedAt|date('d M Y') }}</li>
+            <li>Genre : {{ movie.genre|join(', ') }}</li>
+        </ul>
+    {% else %}
+        <h1>Not found</h1>
+    {% endif %}
 </div>
 {% endblock %}
