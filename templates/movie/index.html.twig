@@ -22,6 +22,9 @@
             {% else %}
                 <p>No movies in database yet...</p>
             {% endfor %}
+            <div class="text-center m-auto">
+                {{ pagerfanta(movies) }}
+            </div>
         </section>
     </div>
 {% endblock %}
