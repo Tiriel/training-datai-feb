@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Book\BookManager;
+use App\Entity\Book;
 use App\Repository\BookRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,22 +20,22 @@ class BookController extends AbstractController
     public function index(): Response
     {
         return $this->render('book/index.html.twig', [
-            'controller_name' => 'BookController',
+            'books' => $this->repository->findAll(),
         ]);
     }
 
     #[Route('/{id<\d+>?1}', name:  'app_book_show', methods: ['GET'])]
-    public function show(int $id): Response
+    public function show(?Book $book): Response
     {
         return $this->render('book/show.html.twig', [
-            'book' => $this->repository->find($id)
+            'book' => $book,
         ]);
     }
 
     #[Route('/title/{title}', name: 'app_book_title', methods: ['GET'])]
     public function title(string $title): Response
     {
-        $book = $this->repository->findOneBy(['title' => $title]);
+        $book = $this->repository->findByLikeTitle($title);
 
         return $this->render('book/show.html.twig', [
             'book' => $book
