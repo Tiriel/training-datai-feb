@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Book
 {
     #[ORM\Id]
@@ -31,6 +32,9 @@ class Book
 
     #[ORM\Column(nullable: true)]
     private ?int $price = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $isbn = null;
 
     public function getId(): ?int
     {
@@ -105,6 +109,18 @@ class Book
     public function setPrice(?int $price): static
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getIsbn(): ?string
+    {
+        return $this->isbn;
+    }
+
+    public function setIsbn(string $isbn): static
+    {
+        $this->isbn = $isbn;
 
         return $this;
     }
