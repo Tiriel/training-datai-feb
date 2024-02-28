@@ -12,12 +12,12 @@
     {% if movie is not empty %}
         <h1>{{ movie.title }}</h1>
 
-        <img class="float-end" src="{{ movie.cover }}" alt="{{ movie.title }} cover">
-        <ul>
-            <li>Id : {{ movie.id }}</li>
-            <li>Plot : {{ movie.plot }}</li>
-            <li>Released at : {{ movie.releasedAt|date('d M Y') }}</li>
-            <li>Genre : {{ movie.genre|join(', ') }}</li>
+        <img class="float-end" src="{{ movie.poster }}" alt="{{ movie.title }} cover">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Id : {{ movie.id }}</li>
+            <li class="list-group-item">Plot : {{ movie.plot }}</li>
+            <li class="list-group-item">Released at : {{ movie.releasedAt|date('d M Y') }}</li>
+{#            <li class="list-group-item">Genre : {{ movie.genre|join(', ') }}</li>#}
         </ul>
     {% else %}
         <h1>Not found</h1>
