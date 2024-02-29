@@ -8,19 +8,19 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class OmdbApiConsumer
 {
-    public function __construct(protected readonly HttpClientInterface $client)
+    public function __construct(
+        protected readonly HttpClientInterface $omdbClient,
+    )
     {
     }
 
     public function getMovieData(SearchType $type,string $value)
     {
-        $data = $this->client->request(
+        $data = $this->omdbClient->request(
             'GET',
-            'https://www.omdbapi.com',
+            '',
             [
                 'query' => [
-                    'plot' => 'full',
-                    'apikey' => '77e9a2a5',
                     $type->getParam() => $value,
                 ]
             ]
