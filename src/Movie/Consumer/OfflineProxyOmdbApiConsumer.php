@@ -6,9 +6,9 @@ use App\Movie\Enum\SearchType;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-#[When('dev')]
-#[When('test')]
-#[AsDecorator(OmdbApiConsumer::class, priority: 15)]
+//#[When('dev')]
+//#[When('test')]
+//#[AsDecorator(OmdbApiConsumer::class, priority: 15)]
 class OfflineProxyOmdbApiConsumer extends OmdbApiConsumer
 {
     private const MOCK = <<<EOD
