@@ -25,10 +25,10 @@ class BookController extends AbstractController
     }
 
     #[Route('/{id<\d+>?1}', name:  'app_book_show', methods: ['GET'])]
-    public function show(?Book $book): Response
+    public function show(int $id, BookManager $manager): Response
     {
         return $this->render('book/show.html.twig', [
-            'book' => $book,
+            'book' => $manager->getBook($id),
         ]);
     }
 
