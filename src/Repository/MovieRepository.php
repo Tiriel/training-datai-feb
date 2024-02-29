@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Movie;
+use App\Movie\Enum\SearchType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -25,6 +26,33 @@ class MovieRepository extends ServiceEntityRepository
     public function getQueryBuilderForPagination(): QueryBuilder
     {
         return $this->createQueryBuilder('m');
+    }
+
+    public function findLikeOmdb(SearchType $type, string $value): ?Movie
+    {
+        $qb = $this->getWhereClauseForType($type, $value);
+
+        return $qb->orderBy('m.releasedAt', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    private function getWhereClauseForType(SearchType $type, string $value): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('m');
+
+        if (SearchType::Title === $type) {
+            $qb->andWhere($qb->expr()->like('m.title', ':value'))
+                ->setParameter('value', "%$value%");
+
+            return $qb;
+        }
+
+        $qb->andWhere($qb->expr()->eq('m.imdbId', ':value'))
+            ->setParameter('value', $value);
+
+        return $qb;
     }
 
     //    /**
