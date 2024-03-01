@@ -4,10 +4,16 @@ namespace App\Controller;
 
 use App\Book\BookManager;
 use App\Entity\Book;
+use App\Entity\User;
+use App\Form\BookType;
 use App\Repository\BookRepository;
+use App\Security\Voter\BookVoter;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/book')]
 class BookController extends AbstractController
@@ -24,6 +30,7 @@ class BookController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/{id<\d+>?1}', name:  'app_book_show', methods: ['GET'])]
     public function show(int $id, BookManager $manager): Response
     {
@@ -35,10 +42,41 @@ class BookController extends AbstractController
     #[Route('/title/{title}', name: 'app_book_title', methods: ['GET'])]
     public function title(string $title): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
         $book = $this->repository->findByLikeTitle($title);
 
         return $this->render('book/show.html.twig', [
             'book' => $book
+        ]);
+    }
+
+    #[Route('/new', name: 'app_book_new', methods: ['GET', 'POST'])]
+    #[Route('/{id<\d+>}/edit', name: 'app_book_edit', methods: ['GET', 'POST'])]
+    public function save(?Book $book, Request $request, EntityManagerInterface $manager): Response
+    {
+        if (null !== $book) {
+            $this->denyAccessUnlessGranted(BookVoter::EDIT, $book);
+        }
+        $book ??= new Book();
+        $form = $this->createForm(BookType::class, $book);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            if (null == $book->getId()
+                && ($user = $this->getUser()) instanceof User) {
+                $book->setCreatedBy($user);
+            }
+            $manager->persist($book);
+            $manager->flush();
+
+            return $this->redirectToRoute(
+                'app_book_show',
+                ['id' => $book->getId()]
+            );
+        }
+
+        return $this->render('book/save.html.twig', [
+            'form' => $form,
         ]);
     }
 }
